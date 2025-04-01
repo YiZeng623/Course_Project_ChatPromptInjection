@@ -1,3 +1,0 @@
-streamlit>=1.31.0
-together>=0.2.11
-python-dotenv>=1.0.0 
