@@ -59,15 +59,11 @@ An interactive chat-based game built with Streamlit where players engage with Pr
 - Python 3.9 or higher
 - Required Python packages:
   - streamlit==1.44.0
-  - together==0.2.11
   - python-dotenv==1.0.0
-  - anthropic
-  - openai
+  - together
   - numpy
 - API Keys:
   - TOGETHER_API_KEY
-  - ANTHROPIC_API_KEY (optional)
-  - OPENAI_API_KEY (optional)
 
 ## Setup Instructions
 
