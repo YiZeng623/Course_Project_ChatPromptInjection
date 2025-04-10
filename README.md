@@ -130,7 +130,3 @@ An interactive chat-based game built with Streamlit where players engage with Pr
 ## Contributing
 
 Feel free to submit issues, fork the repository, and create pull requests for any improvements.
-
-## License
-
-[Add your license information here]
