@@ -7,6 +7,7 @@ from tqdm import notebook
 import numpy as np
 from together import Together
 import random
+import streamlit as st
 from prompts import princess_lily_system, hero_volt_system, dog_buddy_system
 
 # Try to load environment variables from .env file if it exists
@@ -15,14 +16,18 @@ try:
 except Exception:
     pass  # Proceed without .env file (for deployment)
 
-# Access the API keys with default empty strings
-together_api_key = os.getenv('TOGETHER_API_KEY', '')
+# Try to get API key from Streamlit secrets first, then fall back to environment variables
+try:
+    together_api_key = st.secrets["together"]["api_key"]
+except Exception:
+    together_api_key = os.getenv('TOGETHER_API_KEY', '')
+
 anthropic_api_key = os.getenv('ANTHROPIC_API_KEY', '')
 openai_api_key = os.getenv('OPENAI_API_KEY', '')
 
 # Validate required API key
 if not together_api_key:
-    raise ValueError("TOGETHER_API_KEY is required but not found in environment variables")
+    raise ValueError("TOGETHER_API_KEY is required but not found in Streamlit secrets or environment variables")
 
 def data_gen(inputs, difficulty_level=0, model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo"):
 # def data_gen(inputs, system=hero_volt_system, model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo"):
