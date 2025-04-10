@@ -31,8 +31,7 @@ if not together_api_key:
 
 def data_gen(inputs, difficulty_level=0, model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo"):
     # Initialize Together client with the correct API
-    Together.api_key = together_api_key
-    together_client = Together()
+    together_client = Together(api_key=together_api_key)
 
     # Select system prompt based on difficulty level
     system_prompts = {
