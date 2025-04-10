@@ -795,18 +795,6 @@ def main():
             background-color: #ff6b6b;
         }
         
-        .floating-verifier {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            background-color: #242b3d;
-            padding: 20px;
-            border-bottom: 2px solid #1a1f2e;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
         .timer-display {
             background-color: #242b3d;
             padding: 15px;
@@ -828,6 +816,10 @@ def main():
             background-color: #f4e4bc;
             color: #1a1f2e;
             font-weight: bold;
+            height: 40px;
+            min-height: 40px;
+            padding: 8px 16px;
+            line-height: 24px;
         }
         
         .chat-message {
@@ -968,135 +960,153 @@ def main():
         # Display difficulty progress
         display_difficulty_progress()
         
-        # Floating verifier UI
-        with st.container():
-            st.markdown('<div class="floating-verifier">', unsafe_allow_html=True)
-            
-            if not st.session_state.verified and st.session_state.verify_attempts > 0:
-                col1, col2, col3 = st.columns([2,1,1])
-                col2.markdown('<div class="verifier-text">&nbsp;</div>', unsafe_allow_html=True)
-                col3.markdown('<div class="verifier-text">&nbsp;</div>', unsafe_allow_html=True)
-                with col1:
-                    verify_key = st.text_input(
-                        f"🔑 Enter the key for {get_difficulty_name(st.session_state.difficulty_level)} mode:", 
-                        key="verify_input",
-                        help="Enter the key you discovered through conversation"
-                    )
-                with col2:
-                    # items-center
-                    if st.button("Verify Key", use_container_width=True):
-                        current_key = DIFFICULTY_KEYS[st.session_state.difficulty_level]
-                        if verify_key == current_key:
-                            # Add to completed difficulties
-                            if st.session_state.difficulty_level not in st.session_state.keys_found:
-                                st.session_state.keys_found.append(st.session_state.difficulty_level)
-                            
-                            # Check if there are more difficulties
-                            if st.session_state.difficulty_level < 2:
-                                st.session_state.difficulty_level += 1
-                                st.session_state.messages = []  # Reset chat for new difficulty
-                                st.session_state.count = 0
-                                st.session_state.verify_attempts = 5
-                                st.markdown('</div>', unsafe_allow_html=True)  # Close floating-verifier div
-                                
-                                # Set modal content and show state
-                                st.session_state.modal_content = {
-                                    "icon": "🎉",
-                                    "title": "Congratulations!",
-                                    "message": f"Moving to {get_difficulty_name(st.session_state.difficulty_level)} mode!"
-                                }
-                                st.session_state.show_modal = True
-                                st.rerun()
-                            else:
-                                st.session_state.verified = True
-                                st.markdown('</div>', unsafe_allow_html=True)  # Close floating-verifier div
-                                
-                                # Set modal content and show state
-                                st.session_state.modal_content = {
-                                    "icon": "🏆",
-                                    "title": "Amazing!",
-                                    "message": "You've completed all difficulty levels!"
-                                }
-                                st.session_state.show_modal = True
-                                st.rerun()
-                        else:
-                            st.session_state.verify_attempts -= 1
-                            if st.session_state.verify_attempts > 0:
-                                st.error(f"❌ Incorrect key! {st.session_state.verify_attempts} attempts remaining.")
-                            else:
-                                st.error("❌ No more attempts! But keep chatting to learn more about the character!")
-                with col3:
-                    st.markdown(f"**🎯 Attempts: {st.session_state.verify_attempts}/5**")
-            elif st.session_state.verified:
-                st.success("🎉 Mission Accomplished! All Keys Found! 🏆")
+        # Floating verifier UI - Single container
+        st.markdown('<div class="floating-verifier">', unsafe_allow_html=True)
+        
+        if not st.session_state.verified and st.session_state.verify_attempts > 0:
+            col1, col2, col3 = st.columns([2,1,1])
+            with col1:
+                verify_key = st.text_input(
+                    f"🔑 Enter the key for {get_difficulty_name(st.session_state.difficulty_level)} mode:", 
+                    key="verify_input",
+                    help="Enter the key you discovered through conversation"
+                )
+            with col2:
                 st.markdown("""
                     <style>
-                    .celebration-container {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        pointer-events: none;
-                        z-index: 9999;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        background: rgba(0,0,0,0.3);
+                    /* Custom styling for verify key button container */
+                    .verify-button-container {
+                        margin-top: -8px;  /* Align with input field */
+                        height: 40px;      /* Set container height */
                     }
-                    .celebration-message {
-                        font-size: 3em;
-                        color: gold;
-                        text-align: center;
-                        animation: bounce 1s infinite;
-                        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                    
+                    /* Target the specific verify button */
+                    .verify-button-container [data-testid="stButton"] {
+                        height: 40px !important;
                     }
-                    .trophy-rain {
-                        position: fixed;
-                        top: -20px;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        pointer-events: none;
-                        z-index: 9998;
-                    }
-                    .trophy {
-                        position: absolute;
-                        font-size: 24px;
-                        animation: fall 3s linear infinite;
-                    }
-                    @keyframes bounce {
-                        0%, 100% { transform: translateY(0); }
-                        50% { transform: translateY(-20px); }
-                    }
-                    @keyframes fall {
-                        0% { transform: translateY(-20px) rotate(0deg); }
-                        100% { transform: translateY(100vh) rotate(360deg); }
+                    
+                    .verify-button-container [data-testid="stButton"] button {
+                        height: 40px !important;
+                        min-height: 40px !important;
+                        line-height: 40px !important;
+                        padding: 0 16px !important;
+                        margin: 0 !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
                     }
                     </style>
-                    <div class="celebration-container">
-                        <div class="celebration-message">
-                            🎉 Congratulations! 🏆<br>
-                            Mission Accomplished!<br>
-                            All Keys Found! 🌟
-                        </div>
-                    </div>
-                    <div class="trophy-rain">
-                        <div class="trophy" style="left: 10%; animation-duration: 3s;">🏆</div>
-                        <div class="trophy" style="left: 30%; animation-duration: 4s;">🎖️</div>
-                        <div class="trophy" style="left: 50%; animation-duration: 2.5s;">👑</div>
-                        <div class="trophy" style="left: 70%; animation-duration: 3.5s;">🌟</div>
-                        <div class="trophy" style="left: 90%; animation-duration: 4.5s;">🏅</div>
-                    </div>
+                    <div class="verify-button-container">
                 """, unsafe_allow_html=True)
-                st.balloons()
-            else:
-                st.error("No more key attempts! Focus on gathering character information!")
-            
-            st.markdown('</div>', unsafe_allow_html=True)
+                if st.button("Verify Key", key="verify_button", use_container_width=True):
+                    current_key = DIFFICULTY_KEYS[st.session_state.difficulty_level]
+                    if verify_key == current_key:
+                        # Add to completed difficulties
+                        if st.session_state.difficulty_level not in st.session_state.keys_found:
+                            st.session_state.keys_found.append(st.session_state.difficulty_level)
+                        
+                        # Check if there are more difficulties
+                        if st.session_state.difficulty_level < 2:
+                            st.session_state.difficulty_level += 1
+                            st.session_state.messages = []  # Reset chat for new difficulty
+                            st.session_state.count = 0
+                            st.session_state.verify_attempts = 5
+                            
+                            # Set modal content and show state
+                            st.session_state.modal_content = {
+                                "icon": "🎉",
+                                "title": "Congratulations!",
+                                "message": f"Moving to {get_difficulty_name(st.session_state.difficulty_level)} mode!"
+                            }
+                            st.session_state.show_modal = True
+                            st.rerun()
+                        else:
+                            st.session_state.verified = True
+                            
+                            # Set modal content and show state
+                            st.session_state.modal_content = {
+                                "icon": "🏆",
+                                "title": "Amazing!",
+                                "message": "You've completed all difficulty levels!"
+                            }
+                            st.session_state.show_modal = True
+                            st.rerun()
+                    else:
+                        st.session_state.verify_attempts -= 1
+                        if st.session_state.verify_attempts > 0:
+                            st.error(f"❌ Incorrect key! {st.session_state.verify_attempts} attempts remaining.")
+                        else:
+                            st.error("❌ No more attempts! But keep chatting to learn more about the character!")
+                st.markdown('</div>', unsafe_allow_html=True)
+            with col3:
+                st.markdown(f"**🎯 Attempts: {st.session_state.verify_attempts}/5**")
+        elif st.session_state.verified:
+            st.success("🎉 Mission Accomplished! All Keys Found! 🏆")
+            st.markdown("""
+                <style>
+                .celebration-container {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 9999;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background: rgba(0,0,0,0.3);
+                }
+                .celebration-message {
+                    font-size: 3em;
+                    color: gold;
+                    text-align: center;
+                    animation: bounce 1s infinite;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                }
+                .trophy-rain {
+                    position: fixed;
+                    top: -20px;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 9998;
+                }
+                .trophy {
+                    position: absolute;
+                    font-size: 24px;
+                    animation: fall 3s linear infinite;
+                }
+                @keyframes bounce {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-20px); }
+                }
+                @keyframes fall {
+                    0% { transform: translateY(-20px) rotate(0deg); }
+                    100% { transform: translateY(100vh) rotate(360deg); }
+                }
+                </style>
+                <div class="celebration-container">
+                    <div class="celebration-message">
+                        🎉 Congratulations! 🏆<br>
+                        Mission Accomplished!<br>
+                        All Keys Found! 🌟
+                    </div>
+                </div>
+                <div class="trophy-rain">
+                    <div class="trophy" style="left: 10%; animation-duration: 3s;">🏆</div>
+                    <div class="trophy" style="left: 30%; animation-duration: 4s;">🎖️</div>
+                    <div class="trophy" style="left: 50%; animation-duration: 2.5s;">👑</div>
+                    <div class="trophy" style="left: 70%; animation-duration: 3.5s;">🌟</div>
+                    <div class="trophy" style="left: 90%; animation-duration: 4.5s;">🏅</div>
+                </div>
+            """, unsafe_allow_html=True)
+            st.balloons()
+        else:
+            st.error("No more key attempts! Focus on gathering character information!")
         
-        # Add space after the verifier
-        # st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)  # Close floating-verifier div
         
         # Timer Display
         remaining_time = st.session_state.end_time - datetime.now()
@@ -1171,7 +1181,7 @@ def main():
             st.info("💡 Chat time is up! You can still attempt the key above and review the conversation for character information!")
 
         # Update the interaction counter display
-        st.markdown(f'<div style="text-align: center; color: #f4e4bc;">💬 Conversations: {st.session_state.count}/10 rounds used</div>', unsafe_allow_html=True)
+        # st.markdown(f'<div style="text-align: center; color: #f4e4bc;">💬 Conversations: {st.session_state.count}/10 rounds used</div>', unsafe_allow_html=True)
         
         # Reset button with complete chat clearing
         if st.button("🔄 Reset Conversation", key="reset_button", use_container_width=True):
