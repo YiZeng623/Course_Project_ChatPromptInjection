@@ -9,13 +9,20 @@ from together import Together
 import random
 from prompts import princess_lily_system, hero_volt_system, dog_buddy_system
 
-# Load environment variables from the .env file
-load_dotenv()
+# Try to load environment variables from .env file if it exists
+try:
+    load_dotenv()
+except Exception:
+    pass  # Proceed without .env file (for deployment)
 
-# Access the API keys
-anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
-openai_api_key = os.getenv('OPENAI_API_KEY')
-together_api_key = os.getenv('TOGETHER_API_KEY')
+# Access the API keys with default empty strings
+together_api_key = os.getenv('TOGETHER_API_KEY', '')
+anthropic_api_key = os.getenv('ANTHROPIC_API_KEY', '')
+openai_api_key = os.getenv('OPENAI_API_KEY', '')
+
+# Validate required API key
+if not together_api_key:
+    raise ValueError("TOGETHER_API_KEY is required but not found in environment variables")
 
 def data_gen(inputs, difficulty_level=0, model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo"):
 # def data_gen(inputs, system=hero_volt_system, model_name="meta-llama/Llama-3.3-70B-Instruct-Turbo"):
