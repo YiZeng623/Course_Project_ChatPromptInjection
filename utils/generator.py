@@ -1,20 +1,13 @@
 import os
 from dotenv import load_dotenv
-import json
-import anthropic
-import openai
-from tqdm import notebook
 import numpy as np
 from together import Together
-import random
 from .prompts import princess_lily_system_0, princess_lily_system_1, princess_lily_system_2
 
 # Load environment variables from the .env file
 load_dotenv()
 
 # Access the API keys
-anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
-openai_api_key = os.getenv('OPENAI_API_KEY')
 together_api_key = os.getenv('TOGETHER_API_KEY')
 
 # Define the system prompts for each difficulty level

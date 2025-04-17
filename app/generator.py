@@ -1,12 +1,8 @@
 import os
 from dotenv import load_dotenv
-import json
-import anthropic
-import openai
-from tqdm import notebook
 import numpy as np
 from together import Together
-import random
+
 import streamlit as st
 from prompts import princess_lily_system, hero_volt_system, dog_buddy_system
 
